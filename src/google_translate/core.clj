@@ -1,45 +1,39 @@
 (ns google-translate.core
-  (:import [com.google.cloud.translate Translate Translate$TranslateOption TranslateOptions Language]))
+  (:import [com.google.cloud.translate Translate Translate$TranslateOption TranslateOptions Language]
+           [java.lang.reflect Array]))
 
-(def ^:private api-key (-> "config/creds.edn" slurp read-string :api-key))
+(defn- get-service-v1 []
+  (-> (TranslateOptions/getDefaultInstance)
+      (.getService)))
 
-(def options (TranslateOptions/getDefaultInstance))
-
-(def translate (.getService options))
-(def translate (-> (TranslateOptions/newBuilder)
-                   (.setApiKey api-key)
-                   (.build)
-                   (.getService)))
-
-(defn get-service []
+(defn- get-service-v2 []
+  (let [api-key (-> "config/creds.edn" slurp read-string :api-key)])
   (-> (TranslateOptions/newBuilder)
       (.setApiKey api-key)
       (.build)
       (.getService)))
 
+(def get-service get-service-v1)
+
 #_(def detection (.detect translate "hola"))
 
+(defn language-opts [& opts]
+  (let [{:keys [from to]} (apply hash-map (first opts))
+        lang-opts (Array/newInstance Translate$TranslateOption 2)]
+    (do
+      (aset lang-opts 0 (Translate$TranslateOption/sourceLanguage from))
+      (aset lang-opts 1 (Translate$TranslateOption/targetLanguage to)))
+    lang-opts))
 
-;; these also work
-;; (.getLanguage detection)
-;; (.detect translate ["Hello, World!", "¡Hola Mundo!"])
+(defn translate! [text & opts]
+  (let [translate (get-service-v1)
+        lang-opts (if opts (language-opts opts) (language-opts))]
+    (-> (.translate translate text lang-opts) (.getTranslatedText))))
 
+(comment
+  
+  (translate! "hola mundo")
 
-(def opts (java.lang.reflect.Array/newInstance Translate$TranslateOption 2))
-(aset opts 0 (Translate$TranslateOption/sourceLanguage "es"))
-(aset opts 1 (Translate$TranslateOption/targetLanguage "en"))
-
-(def opts (let [opts (java.lang.reflect.Array/newInstance Translate$TranslateOption 2)]
-            (aset opts 0 (Translate$TranslateOption/sourceLanguage "es"))
-            (aset opts 1 (Translate$TranslateOption/targetLanguage "it"))
-            opts))
-
-(def translation (.translate translate "¡Hola Mundo!" opts))
-
-(defn translate [text]
-  (let [translate (get-service)]
-    (-> (.translate translate text opts) (.getTranslatedText))))
-
-(translate "hola mundo")
+  (translate! "hola mundo" :to "it" :from "es"))
 
 
