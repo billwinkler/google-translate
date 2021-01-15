@@ -11,6 +11,12 @@
                    (.build)
                    (.getService)))
 
+(defn get-service []
+  (-> (TranslateOptions/newBuilder)
+      (.setApiKey api-key)
+      (.build)
+      (.getService)))
+
 #_(def detection (.detect translate "hola"))
 
 
@@ -23,6 +29,17 @@
 (aset opts 0 (Translate$TranslateOption/sourceLanguage "es"))
 (aset opts 1 (Translate$TranslateOption/targetLanguage "en"))
 
-(def translation (.translate translate "hola" opts))
+(def opts (let [opts (java.lang.reflect.Array/newInstance Translate$TranslateOption 2)]
+            (aset opts 0 (Translate$TranslateOption/sourceLanguage "es"))
+            (aset opts 1 (Translate$TranslateOption/targetLanguage "it"))
+            opts))
 
-(.getTranslatedText translation)
+(def translation (.translate translate "¡Hola Mundo!" opts))
+
+(defn translate [text]
+  (let [translate (get-service)]
+    (-> (.translate translate text opts) (.getTranslatedText))))
+
+(translate "hola mundo")
+
+
