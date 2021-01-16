@@ -1,25 +1,57 @@
 # google-translate
 
+A clojure wrapper for the
+[Google Translate API](https://googleapis.dev/java/google-cloud-translate/latest/index.html
+"Google Translate Javadocs").
 
-## Setup
+## Install
+Add the following dependency to your `project.clj` file:
 
-First, follow the instructions to setup credentials, billing, etc
+    [google-translate "0.1.0"]
 
-https://cloud.google.com/translate/docs/setup
+## Credentials
 
-Next, the javadocs
+Follow link to set up credentials, billing, etc...
 
+<https://cloud.google.com/translate/docs/setup>
 
-https://github.com/googleapis/java-translate
+You'll need credentials to make api calls. These can be specified via
+an environment variable where `[PATH]` is the path to the json
+credentials for a particular google project.  This is the project
+where any charges will be accounted for.
 
-https://googleapis.dev/java/google-cloud-translate/latest/index.html
+``` shell
+export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
+```
+
+You can use an `api-key` as an alternative.
+
+``` clojure
+{:api-key "your api key"}
+```
+
+Store (and gitignore) it in `../config/creds.edn`.
+
 ## Usage
 
-FIXME
+``` clojure
+(translate! "hola mundo") => "Hello World"
+(translate! "hola mundo" :from "es" :to "it") => "Ciao mondo"
+```
+
+
+
+
+## Javadocs)
+
+<https://googleapis.dev/java/google-cloud-translate/latest/index.html>
+
+<https://github.com/googleapis/java-translate>
+
 
 ## License
 
-Copyright © 2021 FIXME
+Copyright © 2021 Bill Winkler
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
