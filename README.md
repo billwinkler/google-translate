@@ -7,7 +7,7 @@ A clojure wrapper for the
 ## Install
 Add the following dependency to your `project.clj` file:
 
-    [google-translate "0.1.0"]
+    [google-translate "0.1.0-SNAPSHOT"]
 
 ## Credentials
 

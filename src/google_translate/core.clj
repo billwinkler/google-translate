@@ -21,6 +21,10 @@
   "Configure to use api key as creds"
     (alter-var-root (var *get-service*) (constantly get-service-v2)))
 
+(defn use-env-var-creds []
+  "Configure to use environment variable as creds"
+    (alter-var-root (var *get-service*) (constantly get-service-v1)))
+
 #_(def detection (.detect translate "hola"))
 
 (defn language-opts [& opts]
@@ -32,7 +36,7 @@
     lang-opts))
 
 (defn translate! [text & opts]
-  (let [translate (get-service)
+  (let [translate (*get-service*)
         lang-opts (if opts (language-opts opts) (language-opts))]
     (-> (.translate translate text lang-opts) (.getTranslatedText))))
 
