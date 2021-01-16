@@ -15,17 +15,30 @@
         (.build)
         (.getService))))
 
-(def ^:dynamic *get-service* get-service-v1)
+(def ^:dynamic *get-service-method* get-service-v1)
 
-(defn use-api-key []
-  "Configure to use api key as creds"
-    (alter-var-root (var *get-service*) (constantly get-service-v2)))
+(defn get-service []
+  "Get a TranslateImpl using the authentication method
+   determined by `set-authentication-method!`"
+  (*get-service-method*))
 
-(defn use-env-var-creds []
-  "Configure to use environment variable as creds"
-    (alter-var-root (var *get-service*) (constantly get-service-v1)))
+(defn set-authentication-method!
+  "Reset the authentication method to use an `:api-key`"
+  ([] (set-authentication-method! :env))
+  ([creds]
+   (alter-var-root
+    (var *get-service-method*)
+    (constantly (case creds
+                  :env get-service-v1  
+                  :api-key get-service-v2
+                  (throw (Exception. (str "Unknown authentication method " creds))))))))
 
-#_(def detection (.detect translate "hola"))
+
+(defn detect [text]
+  "Detect the language of the given text"
+  (let [detection (.detect (get-service) text)]
+    {:language (.getLanguage detection)
+     :confidence (.getConfidence detection)}))
 
 (defn language-opts [& opts]
   (let [{:keys [from to]} (apply hash-map (first opts))
@@ -36,7 +49,7 @@
     lang-opts))
 
 (defn translate! [text & opts]
-  (let [translate (*get-service*)
+  (let [translate (get-service)
         lang-opts (if opts (language-opts opts) (language-opts))]
     (-> (.translate translate text lang-opts) (.getTranslatedText))))
 

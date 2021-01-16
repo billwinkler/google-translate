@@ -30,11 +30,18 @@ You can use an `api-key` as an alternative.
 {:api-key "your api key"}
 ```
 
-Store (and gitignore) it in `../config/creds.edn`.
+Store (and gitignore) it in `../config/creds.edn`. Then set the authentication method to use an `api-key` instead of the environment variable.
+
+
+``` clojure
+(set-authentication-method! :api-key)
+```
 
 ## Usage
 
 ``` clojure
+(detect "hola") => {:language "es", :confidence 0.91015625}
+
 (translate! "hola mundo") => "Hello World"
 (translate! "hola mundo" :from "es" :to "it") => "Ciao mondo"
 ```
