@@ -49,7 +49,7 @@ Store (and gitignore) it in `../config/creds.edn`. Then set the authentication m
 
 
 
-## Javadocs)
+## Javadocs
 
 <https://googleapis.dev/java/google-cloud-translate/latest/index.html>
 
