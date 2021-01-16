@@ -3,17 +3,23 @@
            [java.lang.reflect Array]))
 
 (defn- get-service-v1 []
+  "Get service using GOOGLE_APPLICATION_CREDENTIALS environment var"
   (-> (TranslateOptions/getDefaultInstance)
       (.getService)))
 
 (defn- get-service-v2 []
-  (let [api-key (-> "config/creds.edn" slurp read-string :api-key)])
-  (-> (TranslateOptions/newBuilder)
-      (.setApiKey api-key)
-      (.build)
-      (.getService)))
+  "Get service using and api-key"
+  (let [api-key (-> "config/creds.edn" slurp read-string :api-key)]
+    (-> (TranslateOptions/newBuilder)
+        (.setApiKey api-key)
+        (.build)
+        (.getService))))
 
-(def get-service get-service-v1)
+(def ^:dynamic *get-service* get-service-v1)
+
+(defn use-api-key []
+  "Configure to use api key as creds"
+    (alter-var-root (var *get-service*) (constantly get-service-v2)))
 
 #_(def detection (.detect translate "hola"))
 
@@ -26,7 +32,7 @@
     lang-opts))
 
 (defn translate! [text & opts]
-  (let [translate (get-service-v1)
+  (let [translate (get-service)
         lang-opts (if opts (language-opts opts) (language-opts))]
     (-> (.translate translate text lang-opts) (.getTranslatedText))))
 
@@ -34,6 +40,15 @@
   
   (translate! "hola mundo")
 
-  (translate! "hola mundo" :to "it" :from "es"))
+  (translate! "hola mundo" :to "it" :from "es")
+
+  (translate! "Sono le mia mele" :from "it" :to "en")
+  (translate! "They are my apples" :to "it")
+  (translate! "My cats drink milk" :to "it")
+  (translate! "Their dog does not eat candy" :to "it")
+  (translate! "Your lion eats my steak" :to "it")
+  
+
+  )
 
 
