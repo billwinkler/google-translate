@@ -1,5 +1,6 @@
 (ns google-translate.core
-  (:import [com.google.cloud.translate Translate Translate$TranslateOption TranslateOptions Language]
+  (:import [com.google.cloud.translate Translate
+            Translate$TranslateOption TranslateOptions Language]
            [java.lang.reflect Array]))
 
 (defn- get-service-v1 []
@@ -52,6 +53,9 @@
   (let [translate (get-service)
         lang-opts (if opts (language-opts opts) (language-opts))]
     (-> (.translate translate text lang-opts) (.getTranslatedText))))
+
+(def m-detect (memoize detect))
+(def m-translate! (memoize translate!))
 
 (comment
   

@@ -40,14 +40,20 @@ Store (and gitignore) it in `../config/creds.edn`. Then set the authentication m
 ## Usage
 
 ``` clojure
+(use 'google-translate.core)
+
 (detect "hola") => {:language "es", :confidence 0.91015625}
 
 (translate! "hola mundo") => "Hello World"
 (translate! "hola mundo" :from "es" :to "it") => "Ciao mondo"
 ```
 
+Use the memoized versions to avoid duplicate google api invocations.
 
-
+``` clojure
+(m-detect "hola mundo") => "Hello World"
+(m-translate! "hola mundo") => "Hello World"
+```
 
 ## Javadocs
 
