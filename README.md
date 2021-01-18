@@ -7,7 +7,7 @@ A clojure wrapper for the
 ## Install
 Add the following dependency to your `project.clj` file:
 
-    [google-translate "0.1.0"]
+    [google-translate "0.1.3-SNAPSHOT"]
 
 ## Credentials
 
@@ -54,6 +54,9 @@ Use the memoized versions to avoid duplicate google api invocations.
 (m-detect "hola mundo") => "Hello World"
 (m-translate! "hola mundo") => "Hello World"
 ```
+
+You can view the supported languages for a given target language by using `languages` or `m-languages`.
+English is the default target language.
 
 ## Javadocs
 
