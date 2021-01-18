@@ -25,7 +25,13 @@
       "Hola mundo" "Hello World" nil nil
       "Hola mundo" "Ciao mondo" nil "it")))
 
+(deftest test-supported-languages
+  (testing "supported languages"
+    (is (= "German" (get (languages) "de" )))))
+
 (deftest test-memoized-versions
   (testing "testing memoized versions"
-    (is (= (translate! "hola")
-           (m-translate! "hola")))))
+    (is (= "Hello" (m-translate! "hola")))
+    (is (= "German" (get (m-languages) "de" )))))
+
+

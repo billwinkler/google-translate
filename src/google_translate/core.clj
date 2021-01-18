@@ -1,6 +1,7 @@
 (ns google-translate.core
   (:import [com.google.cloud.translate Translate
-            Translate$TranslateOption TranslateOptions Language]
+            Translate$TranslateOption TranslateOptions Language
+            Translate$LanguageListOption]
            [java.lang.reflect Array]))
 
 (defn- get-service-v1 []
@@ -49,6 +50,16 @@
       (aset lang-opts 1 (Translate$TranslateOption/targetLanguage to)))
     lang-opts))
 
+(defn languages
+  "List the supported languages for a given target Language"
+  ([] (supported-languages "en"))
+  ([target] (let [translate (get-service)
+                  lang-opts (doto (Array/newInstance Translate$LanguageListOption 1)
+                              (aset 0 (Translate$LanguageListOption/targetLanguage target)))]
+              (->> (.listSupportedLanguages translate lang-opts)
+                   (map (juxt #(.getCode %) #(.getName %))) 
+                   (reduce (fn [m [code name]] (assoc m code name)) (sorted-map))))))
+
 (defn translate! [text & opts]
   (let [translate (get-service)
         lang-opts (if opts (language-opts opts) (language-opts))]
@@ -56,6 +67,7 @@
 
 (def m-detect (memoize detect))
 (def m-translate! (memoize translate!))
+(def m-languages (memoize languages))
 
 (comment
   
